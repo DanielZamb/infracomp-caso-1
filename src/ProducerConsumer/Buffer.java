@@ -31,7 +31,6 @@ public class Buffer<K> {
             }
         }
         synchronized (empty) {
-
             try {
                 empty.notify();
             } catch (Exception e) {
@@ -62,5 +61,14 @@ public class Buffer<K> {
             }catch (Exception e){}
         }
         return msg;
+    }
+    public int size(){
+        return buffer.size();
+    }
+    public Boolean isFull(){
+        return buffer.size() == n;
+    }
+    public Boolean isEmpty(){
+        return buffer.isEmpty();
     }
 }
