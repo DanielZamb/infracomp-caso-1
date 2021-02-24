@@ -21,9 +21,11 @@ public class Consumer extends Thread{
                 }
             }
             synchronized (cBuffer){
-                String prod = (String) cBuffer.remove();
-                actuales++;
-                System.out.println("C"+this.id+" has consumed <"+prod+">");
+                if (cBuffer.size()>0){
+                    String prod = (String) cBuffer.remove();
+                    actuales++;
+                    System.out.println("C"+this.id+" has consumed <"+prod+">");
+                }
             }
         }
         System.out.println("The thread managing C"+id+" has successfully terminated");

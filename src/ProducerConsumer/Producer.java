@@ -18,8 +18,9 @@ public class Producer extends Thread{
         int prodIndex = 0;
         while(numProductos != actuales){
             synchronized (this){
-                while(pBuffer.isFull())
-                Producer.yield();
+                while(pBuffer.isFull()){
+                    Producer.yield();
+                }
             }
             synchronized (pBuffer){
                 String prod = tipoProd + prodIndex;

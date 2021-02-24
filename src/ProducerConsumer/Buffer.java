@@ -5,6 +5,7 @@ import java.util.LinkedList;
 public class Buffer<K> {
     private LinkedList<K> buffer;
     private int n;
+    private MiddleMan middleMan;
     Object full,empty;
     public Buffer(int n){
         this.n = n;
@@ -17,6 +18,10 @@ public class Buffer<K> {
         boolean cont = true;
         while (cont){
             synchronized (this){
+                if (middleMan != null)
+                    synchronized (middleMan){
+                        middleMan.notify();
+                    }
                 if (buffer.size()<n){
                     buffer.addFirst(k);
                     cont = false;
@@ -42,6 +47,10 @@ public class Buffer<K> {
         K msg = null;
         while (cont){
             synchronized (this){
+                if (middleMan != null)
+                    synchronized (middleMan){
+                        middleMan.notify();
+                    }
                 if  (buffer.size() > 0){
                     msg = buffer.removeLast();
                     cont = false;
@@ -61,6 +70,10 @@ public class Buffer<K> {
             }catch (Exception e){}
         }
         return msg;
+    }
+
+    public void setMiddleMan(MiddleMan middleMan){
+        this.middleMan = middleMan;
     }
     public int size(){
         return buffer.size();

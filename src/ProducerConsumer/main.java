@@ -24,15 +24,24 @@ public class main extends Thread{
             int numProductos = Integer.parseInt(prop.getProperty("concurrencia.numProductos"));
             int buzonesProd = Integer.parseInt(prop.getProperty("concurrencia.buzonesProd"));
             int buzonesCons = Integer.parseInt(prop.getProperty("concurrencia.buzonesCons"));
-            int totalProducts = numProdCons*numProdCons;
+            int totalProducts = numProdCons*numProductos;
 
+            commonBuffer = new Buffer<>(1);
             pBuffer = new Buffer<>(buzonesProd);
             cBuffer = new Buffer<>(buzonesCons);
-            commonBuffer = new Buffer<>(1);
             producerMM = new MiddleMan(pBuffer,commonBuffer,true,totalProducts);
             consumerMM = new MiddleMan(cBuffer,commonBuffer,false,totalProducts);
+            commonBuffer.setMiddleMan(consumerMM);
+            pBuffer.setMiddleMan(producerMM); //este man solo puede despertar a pMM
+            cBuffer.setMiddleMan(producerMM);
+
+
+
             producers = new Producer[numProdCons];
             consumers = new Consumer[numProdCons];
+
+            producerMM.start();
+            consumerMM.start();
 
             for(int i = 0; i<numProdCons/2; i++){
                 producers[i] = new Producer (i,numProductos,pBuffer,"A");
@@ -48,8 +57,16 @@ public class main extends Thread{
             for(int i=0; i<numProdCons; i++){
                 consumers[i].start();
             }
-        } catch (IOException ex){
-            ex.printStackTrace();
+
+
+            /*for (int i=0; i<numProdCons;i++){
+                producers[i].join();
+                consumers[i].join();
+            }
+            producerMM.join();
+            consumerMM.join();*/
+        } catch (IOException e){//| InterruptedException ex
+            e.printStackTrace();
         }
     }
     public static void main(String[] args){
